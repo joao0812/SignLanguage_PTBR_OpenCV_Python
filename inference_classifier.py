@@ -5,6 +5,11 @@ import numpy as np
 
 cap = cv2.VideoCapture(0)
 
+def writeText(img, text, color=(255,0,0)):
+    fonte = cv2.FONT_HERSHEY_SIMPLEX
+    text = text.upper()
+    cv2.putText(img, text, (10,25), fonte, 0.5, color, 1, cv2.LINE_AA)
+
 # Parâmetros que auxiliam na ilustração/desenho dos landmarks (ponto de referência) das mãos detectadas na nossa imagem
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
@@ -48,11 +53,14 @@ while True:
 
         #print(len(data_aux))
         prediction = model.predict(np.asarray([data_aux]))
-
+        
+        print(prediction[0])
         predicted_character = labels_dict[prediction[0]]
 
-        print(predicted_character)
-
+        #print(predicted_character)
+        writeText(frame, f'Number: {prediction[0]}')
+    else:
+        writeText(frame, 'Number: NaN',(0,0,255)) 
     cv2.imshow('WebCam', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
