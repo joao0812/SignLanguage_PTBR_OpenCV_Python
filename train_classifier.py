@@ -9,7 +9,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
 
-DATA_PICKLE_DIR = './data.pickle'
+#DATA_PICKLE_DIR = './data.pickle'
+DATA_PICKLE_DIR = './dataHalfBodyHand.pickle'
 
 data_dict = pickle.load(open(DATA_PICKLE_DIR, 'rb'))
 
@@ -27,9 +28,8 @@ for i in range(len(data[0])//2):
 #print(len(data_list[0]))
 
 df = pd.DataFrame(data_list)
-colunas_nulas = np.isnan(df).any()
-df = df.loc[:, ~colunas_nulas]
-#print(df)
+df = df.loc[:, :41]
+print(df)
 
 #print(data.shape)
 #print(labels)
@@ -50,6 +50,6 @@ score = accuracy_score(y_predict, y_test) # 99.58% de precisão
 
 print(f'{round((score*100), 2)}% de precisão') 
 
-f = open('model.p', 'wb')
+f = open('modelHalfBodyHand.p', 'wb')
 pickle.dump({'model': model}, f) # Salvando o modelo gerado
 f.close()

@@ -14,7 +14,8 @@ mp_drawing_styles = mp.solutions.drawing_styles
 
 hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
 
-DATA_DIR ='./dataSet'
+#DATA_DIR ='./dataSet'
+DATA_DIR = './dataSetHalfBodyHand'
 
 # Tem todos os dados necessários do dataset
 data = [] # Contem a classificação das imagens
@@ -52,7 +53,8 @@ for dir_ in os.listdir(DATA_DIR):
             labels.append(dir_) # Adicionamos as classes (as letras e números), esse dir_ tem o nome das pastas em DATA_DIR
             # Com isso, se temos um conjunto informando q tão coordenada representa uma determinada classe
 
+#print(len(data))
 # Criando um arquivo que vai armazenar um dict que contem os arrays data e labels para não precisar fazer todo o processo de de registro dos dados em cada array, a fim de otimizar o processo
-f = open('data.pickle', 'wb')
+f = open('dataHalfBodyHand.pickle', 'wb')
 pickle.dump({'data': data, 'labels': labels}, f) # Dataset
 f.close()

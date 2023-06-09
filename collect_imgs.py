@@ -10,7 +10,8 @@ def writeText(img, text, color=(255,0,0)):
 
 def main():
     # Create the datasets path 
-    DATA_DIR = './dataSet'
+    #DATA_DIR = './dataSet'
+    DATA_DIR = './dataSetHalfBodyHand'
 
     # Create the datasets folder
     if not os.path.exists(DATA_DIR):
@@ -64,5 +65,5 @@ def main():
     cap.release()
     cv2.destroyAllWindows()
 
-#if __name__ == '__main__':
-#    main()
+if __name__ == '__main__':
+    main()

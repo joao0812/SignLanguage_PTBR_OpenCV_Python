@@ -8,7 +8,8 @@ cap = cv2.VideoCapture(0)
 def writeText(img, text, color=(255,0,0)):
     fonte = cv2.FONT_HERSHEY_SIMPLEX
     text = text.upper()
-    cv2.putText(img, text, (10,25), fonte, 0.5, color, 1, cv2.LINE_AA)
+    cv2.putText(img, text, (10,25), fonte, 1.0, color, 1, cv2.LINE_AA)
+    cv2.putText(img, text, (11,26), fonte, 1.0, color, 1, cv2.LINE_AA)
 
 # Parâmetros que auxiliam na ilustração/desenho dos landmarks (ponto de referência) das mãos detectadas na nossa imagem
 mp_hands = mp.solutions.hands
@@ -23,7 +24,8 @@ while True:
 
     data_aux = []
 
-    model_dict = pickle.load(open('./model.p', 'rb'))
+    #model_dict = pickle.load(open('./model.p', 'rb'))
+    model_dict = pickle.load(open('./modelHalfBodyHand.p', 'rb'))
     model = model_dict['model']
 
     res, frame = cap.read()
