@@ -1,12 +1,14 @@
 import pickle
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, classification_report
+
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
-DATA_PICKLE_DIR = './dataHalfBodyHand.pickle'
+DATA_PICKLE_DIR = './dataSets/dataSetHalfBodyHand.pickle'
 
 data_dict = pickle.load(open(DATA_PICKLE_DIR, 'rb'))
 
@@ -51,6 +53,14 @@ y_predict = model_mlp.predict(x_test)
 score = accuracy_score(y_test, y_predict)
 print(f'{round((score*100), 2)}% de precisão') 
 
-f = open('modelHalfBodyHand_MLP.p', 'wb')
+# Mostra a matrix confusão do modelo MLP gerado
+#cm = confusion_matrix(y_test, y_predict, labels=model_mlp.classes_)
+#disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels= model_mlp.classes_)
+#disp.plot()
+#plt.show()
+
+#print(classification_report(y_test, y_predict))
+
+f = open(f"./models/MPLClassifier.p", 'wb')
 pickle.dump({'model_mlp': model_mlp}, f) # Salvando o modelo gerado
 f.close()

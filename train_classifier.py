@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score
 
 
 #DATA_PICKLE_DIR = './data.pickle'
-DATA_PICKLE_DIR = './dataHalfBodyHand.pickle'
+DATA_PICKLE_DIR = './dataSets/dataSetHalfBodyHand.pickle'
 
 data_dict = pickle.load(open(DATA_PICKLE_DIR, 'rb'))
 
@@ -50,6 +50,6 @@ score = accuracy_score(y_predict, y_test) # 99.58% de precisão
 
 print(f'{round((score*100), 2)}% de precisão') 
 
-f = open('modelHalfBodyHand.p', 'wb')
+f = open('./models/RandomForest.p', 'wb')
 pickle.dump({'model': model}, f) # Salvando o modelo gerado
 f.close()

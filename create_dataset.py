@@ -12,10 +12,10 @@ mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 
-hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
+hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3, max_num_hands=2)
 
-#DATA_DIR ='./dataSet'
-DATA_DIR = './dataSetHalfBodyHand'
+DATA_DIR ='./data/dataSetHalfBodyHand'
+#DATA_DIR = './data/dataSetJustLeftHand'
 
 # Tem todos os dados necessários do dataset
 data = [] # Contem a classificação das imagens
@@ -55,6 +55,6 @@ for dir_ in os.listdir(DATA_DIR):
 
 #print(len(data))
 # Criando um arquivo que vai armazenar um dict que contem os arrays data e labels para não precisar fazer todo o processo de de registro dos dados em cada array, a fim de otimizar o processo
-f = open('dataHalfBodyHand.pickle', 'wb')
+f = open(f"./dataSets/{DATA_DIR.split('/')[-1]}.pickle", 'wb')
 pickle.dump({'data': data, 'labels': labels}, f) # Dataset
 f.close()

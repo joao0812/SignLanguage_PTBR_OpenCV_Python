@@ -16,7 +16,7 @@ mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 
-hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
+hands = mp_hands.Hands(static_image_mode=False, min_detection_confidence=0.3, max_num_hands=1)
 
 labels_dict = {'0': '0', '1': '1', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6', '7': '7', '8': '8', '9': '9'}
 
@@ -25,7 +25,7 @@ while True:
     data_aux = []
 
     #model_dict = pickle.load(open('./model.p', 'rb'))
-    model_dict = pickle.load(open('./modelHalfBodyHand_MLP.p', 'rb'))
+    model_dict = pickle.load(open('./models/MPLClassifier.p', 'rb'))
     model = model_dict['model_mlp']
 
     res, frame = cap.read()

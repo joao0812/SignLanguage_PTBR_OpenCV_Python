@@ -2,16 +2,21 @@ import os
 import keyboard
 import cv2
 
-def writeText(img, text, color=(255,0,0)):
+from sklearn.neural_network import MLPClassifier
+
+def main():
+    model_mlp = MLPClassifier(max_iter=900, verbose=True, tol=0.0000100, hidden_layer_sizes=(26,26))
+    print(str(model_mlp).split('(')[0])
+
+""" def writeText(img, text, color=(255,0,0)):
     fonte = cv2.FONT_HERSHEY_SIMPLEX
     text = text.upper()
     cv2.putText(img, text, (10,25), fonte, 0.5, color, 1, cv2.LINE_AA)
 
-
 def main():
     # Create the datasets path 
     #DATA_DIR = './dataSet'
-    DATA_DIR = './data/dataSetJustLeftHand'
+    DATA_DIR = '../data/dataSetJustLeftHand'
 
     # Create the datasets folder
     if not os.path.exists(DATA_DIR):
@@ -63,7 +68,7 @@ def main():
                 break
 
     cap.release()
-    cv2.destroyAllWindows()
+    cv2.destroyAllWindows() """
 
 if __name__ == '__main__':
     main()
