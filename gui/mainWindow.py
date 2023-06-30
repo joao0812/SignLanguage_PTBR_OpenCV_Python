@@ -1,6 +1,9 @@
 import os
 import sys
 import time
+import pickle
+
+import numpy as np
 
 import mediapipe as mp
 import cv2
@@ -15,7 +18,7 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 
 # Inicializar o MediaPipe
-hands = mp_hands.Hands(static_image_mode=False, min_detection_confidence=0.3, max_num_hands=2)
+hands = mp_hands.Hands(static_image_mode=False, min_detection_confidence=0.3, max_num_hands=1)
 
 class Thread(QThread):
     updateFrame = Signal(QImage)
@@ -26,9 +29,20 @@ class Thread(QThread):
         self.status = True
         self.cap = True
 
+    def writeText(self, img, text, color=(255,0,0)):
+        fonte = cv2.FONT_HERSHEY_SIMPLEX
+        text = text.upper()
+        cv2.putText(img, text, (10,25), fonte, 1.0, color, 1, cv2.LINE_AA)
+        cv2.putText(img, text, (11,26), fonte, 1.0, color, 1, cv2.LINE_AA)
+
     def run(self):
         self.cap = cv2.VideoCapture(0)
+        labels_dict = {'0': '0', '1': '1', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6', '7': '7', '8': '8', '9': '9'}
+        model_dict = pickle.load(open('./models/MPLClassifier.p', 'rb'))
+        model = model_dict['model_mlp']
+
         while self.status:
+            data_aux = []
             ret, frame = self.cap.read()
             if not ret:
                 continue
@@ -40,6 +54,7 @@ class Thread(QThread):
 
             if result.multi_hand_landmarks:
                 for hand_landmarks in result.multi_hand_landmarks:
+                    #print(len(hand_landmarks.landmark))
                     #Desenha os landmarks (pontos de referência) sobre as mãos da imagem, identificando a mesma e cada dedo - útil para saber onde estão os landmarks 
                     mp_drawing.draw_landmarks(
                     frame_rgb, # Image to draw
@@ -48,9 +63,28 @@ class Thread(QThread):
                     mp_drawing_styles.get_default_hand_landmarks_style(),
                     mp_drawing_styles.get_default_hand_connections_style())
 
+                for hand_landmarks in result.multi_hand_landmarks:
+                    for i in range(len(hand_landmarks.landmark)):
+                        if len(hand_landmarks.landmark)<= 42:
+                            x = hand_landmarks.landmark[i].x
+                            y = hand_landmarks.landmark[i].y
+
+                            data_aux.append(x)
+                            data_aux.append(y)
+
+                prediction = model.predict(np.asarray([data_aux]))
+                print(prediction[0])
+                predicted_character = labels_dict[prediction[0]]
+                
+
+                #print(predicted_character)
+                self.writeText(frame_rgb, f'Number: {prediction[0]}',(0,0,255))
+            else:
+                self.writeText(frame_rgb, 'Number: NaN') 
+
             # Creating and scaling QImage
             h, w, ch = frame_rgb.shape
-            #print(color_frame.shape)
+            #print(frame_rgb.shape)
             img = QImage(frame_rgb.data, w, h, ch * w, QImage.Format_RGB888)
             scaled_img = img.scaled(600, 480, Qt.KeepAspectRatio)
 
@@ -73,9 +107,9 @@ class MainWindow(QMainWindow):
         self.about = self.menuBar()
         self.menu_about = self.menu.addMenu('About')
 
-        self.label = QLabel(self)
+        self.label1 = QLabel(self)
         # setFixedSize define o tamanho fixo do widget QLabel para 640 pixels de largura por 480 pixels de altura.
-        self.label.setFixedSize(640, 480)
+        self.label1.setFixedSize(640, 480)
 
         self.th = Thread(self)
         self.th.finished.connect(self.close)
@@ -165,7 +199,7 @@ class MainWindow(QMainWindow):
         right_layout.addLayout(button_layout, 1)
 
         main_layout = QVBoxLayout()
-        main_layout.addWidget(self.label)
+        main_layout.addWidget(self.label1)
         main_layout.addLayout(right_layout)
 
         widget = QWidget(self)
@@ -178,7 +212,7 @@ class MainWindow(QMainWindow):
 
     @Slot(QImage)
     def setImage(self, image):
-        self.label.setPixmap(QPixmap.fromImage(image))
+        self.label1.setPixmap(QPixmap.fromImage(image))
 
     @Slot()
     def start(self):
@@ -193,8 +227,7 @@ class MainWindow(QMainWindow):
         self.status = False
         self.th.terminate()
         # Give time for the thread to finish
-        time.sleep(1)
-        
+        time.sleep(1)        
 
 
 if __name__ == '__main__':

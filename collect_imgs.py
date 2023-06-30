@@ -1,6 +1,7 @@
 import os
 import keyboard
 import cv2
+import time
 
 def writeText(img, text, color=(255,0,0)):
     fonte = cv2.FONT_HERSHEY_SIMPLEX
@@ -11,7 +12,7 @@ def writeText(img, text, color=(255,0,0)):
 def main():
     # Create the datasets path 
     #DATA_DIR = './dataSet'
-    DATA_DIR = './data/dataSetJustLeftHand'
+    DATA_DIR = './data/dataSetHalfBodyHand'
 
     # Create the datasets folder
     if not os.path.exists(DATA_DIR):
@@ -19,7 +20,8 @@ def main():
 
     # Register the number of classes and the size to dataset
     number_of_classes = 10
-    dataset_size = 100
+    dataset_size = 150
+    i = 0
 
     # Get WebCam
     cap = cv2.VideoCapture(0)
@@ -27,40 +29,51 @@ def main():
         if not os.path.exists(os.path.join(DATA_DIR, str(classes))):
             os.makedirs(os.path.join(DATA_DIR, str(classes)))
 
-        while True:
-            res, frame = cap.read()
-            if res:
-                try:
-                    writeText(frame, f"Get ready to register number {classes}")
-                    cv2.imshow('WebCam', frame)
-                    if cv2.waitKey(1) & 0xFF == ord('q'):
-                        break                    
-                except:
-                    print('ERROR')
-                    break
-            else:
-                print('Empty WebCam')
-                break
-
-        counter = 0
-        while counter < dataset_size:
-            res, frame = cap.read()
-            if res:
-                try:
-                    print(f'Dataset to number: {classes}')
-                    cv2.imshow('WebCam', frame)
-
-                    cv2.imwrite(os.path.join(DATA_DIR, str(classes), f'{counter}.jpg'), frame)
-
-                    counter += 1
-                    if cv2.waitKey(1) & 0xFF == ord('q'):
+        for i in range(2):
+            while True:
+                res, frame = cap.read()
+                if res:
+                    try:
+                        writeText(frame, f"Get ready to register number >>{classes}<< with hand {i+1}")
+                        cv2.imshow('WebCam', frame)
+                        if cv2.waitKey(1) & 0xFF == ord('q'):
+                            break                    
+                    except:
+                        print('ERROR')
                         break
-                except:
-                    print('ERROR')
+                else:
+                    print('Empty WebCam')
                     break
 
+            if i == 0:
+                counter = 0
+                compare = dataset_size//2
+                print(compare)
+                print(counter)
             else:
-                break
+                counter = dataset_size//2
+                compare = dataset_size
+                print(compare)
+                print(counter)
+            while counter < compare:
+                res, frame = cap.read()
+                if res:
+                    try:
+                        print(f'Dataset to number: {classes}')
+                        cv2.imshow('WebCam', frame)
+
+                        cv2.imwrite(os.path.join(DATA_DIR, str(classes), f'{counter}.jpg'), frame)
+
+                        counter += 1
+
+                        if cv2.waitKey(1) & 0xFF == ord('q'):
+                            break
+                    except:
+                        print('ERROR')
+                        break
+
+                else:
+                    break
 
     cap.release()
     cv2.destroyAllWindows()
