@@ -1,7 +1,5 @@
 import os
-import keyboard
 import cv2
-import time
 
 def writeText(img, text, color=(255,0,0)):
     fonte = cv2.FONT_HERSHEY_SIMPLEX
@@ -10,17 +8,17 @@ def writeText(img, text, color=(255,0,0)):
 
 
 def main():
-    # Create the datasets path 
+    # Create the data path 
     #DATA_DIR = './dataSet'
     DATA_DIR = './data/dataSetHalfBodyHand'
 
-    # Create the datasets folder
+    # Create the data folder
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR)
 
     # Register the number of classes and the size to dataset
     number_of_classes = 10
-    dataset_size = 150
+    dataset_size = 1
     i = 0
 
     # Get WebCam
@@ -32,9 +30,10 @@ def main():
         for i in range(2):
             while True:
                 res, frame = cap.read()
+                hand = 'Right' if i == 0 else 'Left'
                 if res:
                     try:
-                        writeText(frame, f"Get ready to register number >>{classes}<< with hand {i+1}")
+                        writeText(frame, f"Get ready to register number >>{classes}<< with {hand} hand")
                         cv2.imshow('WebCam', frame)
                         if cv2.waitKey(1) & 0xFF == ord('q'):
                             break                    
@@ -44,6 +43,11 @@ def main():
                 else:
                     print('Empty WebCam')
                     break
+            
+            if len(os.listdir(os.path.join(DATA_DIR, str(classes)))) > 0:
+                to_add = len(os.listdir(os.path.join(DATA_DIR, str(classes))))
+            else:
+                to_add = 0
 
             if i == 0:
                 counter = 0
@@ -62,7 +66,7 @@ def main():
                         print(f'Dataset to number: {classes}')
                         cv2.imshow('WebCam', frame)
 
-                        cv2.imwrite(os.path.join(DATA_DIR, str(classes), f'{counter}.jpg'), frame)
+                        cv2.imwrite(os.path.join(DATA_DIR, str(classes), f'{counter+to_add}.jpg'), frame)
 
                         counter += 1
 

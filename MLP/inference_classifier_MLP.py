@@ -3,6 +3,9 @@ import cv2
 import mediapipe as mp
 import numpy as np
 
+from mediapipe.tasks import python
+from mediapipe.tasks.python import vision
+
 cap = cv2.VideoCapture(0)
 
 w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -27,15 +30,37 @@ def cropImage(img, cord1, cord2, class_pred, class_porcent):
     max_x = 0 if max_x < 0 else max_x
     max_y = 0 if max_y < 0 else max_y
     
-    print(min_x)
-    print(min_y)
-    print(max_x)
-    print(max_y)
+    #print(min_x)
+    #print(min_y)
+    #print(max_x)
+    #print(max_y)
     
     cropped_img = img_copy[min_y:max_y, min_x:max_x]
     #cv2.rectangle(img_copy, (min_x, min_y), (max_x, max_y), (255,0,0), 5)
     #cv2.putText(img_copy, f'{class_pred[0]} -- {(class_porcent*100):.2f}%', (min_x,min_y-10), cv2.FONT_HERSHEY_SIMPLEX, .7, (255,0,0), 1, cv2.LINE_AA)
     return cropped_img
+
+
+def defineHand(img, cord1, cord2, result):
+    img_copy = img.copy()
+    offset = 20
+    min_x = int(cord1[0]) - offset
+    min_y = int(cord1[1]) - offset
+    max_x = int(cord2[0]) + offset
+    max_y = int(cord2[1]) + offset
+
+    min_x = 0 if min_x < 0 else min_x
+    min_y = 0 if min_y < 0 else min_y
+    max_x = 0 if max_x < 0 else max_x
+    max_y = 0 if max_y < 0 else max_y
+
+    handedness_list = result.handedness
+    print(handedness_list[0])
+
+
+    cv2.rectangle(img_copy, (min_x, min_y), (max_x, max_y), (255,0,0), 5)
+    cv2.putText(img_copy, f'aa', (min_x,min_y-10), cv2.FONT_HERSHEY_SIMPLEX, .7, (255,0,0), 1, cv2.LINE_AA)
+    return img_copy
 
 # Parâmetros que auxiliam na ilustração/desenho dos landmarks (ponto de referência) das mãos detectadas na nossa imagem
 mp_hands = mp.solutions.hands
@@ -60,7 +85,6 @@ while True:
     res, frame = cap.read()
 
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
     result = hands.process(frame_rgb)
 
     if result.multi_hand_landmarks:
@@ -102,12 +126,6 @@ while True:
 
         max_points.append(max_point_x[0])
         max_points.append(max_point_y[1])
-        
-
-        print(f'O menor ponto X é: {min_point_x}')
-        print(f'O menor ponto Y é: {min_point_y}')
-        print(f'O maior ponto X é: {max_point_x}')
-        print(f'O maior ponto Y é: {max_point_y}')
 
         prediction = model.predict(np.asarray([data_aux]))
         proba_porcent = model.predict_proba(np.asarray([data_aux]))

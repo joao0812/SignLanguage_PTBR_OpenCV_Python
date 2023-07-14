@@ -40,8 +40,7 @@ class Thread(QThread):
     def writeText(self, img, text, color=(0, 0, 255)):
         fonte = cv2.FONT_HERSHEY_SIMPLEX
         text = text.upper()
-        cv2.putText(img, text, (10, 25), fonte, 1.0, color, 1, cv2.LINE_AA)
-        cv2.putText(img, text, (11, 26), fonte, 1.0, color, 1, cv2.LINE_AA)
+        cv2.putText(img, text, (10, 25), fonte, .6, color, 1, cv2.LINE_AA)
 
     def cropHand(self, img, cord1, cord2):
         img_copy = img.copy()
@@ -66,6 +65,85 @@ class Thread(QThread):
 
     def getRAM(self):
         return psutil.virtual_memory()
+    
+    def collect_imgs(self):
+            # Create the data path 
+        #DATA_DIR = './dataSet'
+        DATA_DIR = './data/dataSetHalfBodyHand'
+
+        # Create the data folder
+        if not os.path.exists(DATA_DIR):
+            os.makedirs(DATA_DIR)
+
+        # Register the number of classes and the size to dataset
+        number_of_classes = 10
+        dataset_size = 1
+        i = 0
+
+        # Get WebCam
+        cap = cv2.VideoCapture(0)
+        for classes in range(number_of_classes):
+            if not os.path.exists(os.path.join(DATA_DIR, str(classes))):
+                os.makedirs(os.path.join(DATA_DIR, str(classes)))
+
+            for i in range(2):
+                while True:
+                    res, frame = cap.read()
+
+                    hand = 'Right' if i == 0 else 'Left'
+                    if res:
+                        try:
+                            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                            # Creating and scaling QImage
+                            h, w, ch = frame_rgb.shape
+                            self.writeText(frame_rgb, f"Get ready to register number >>{classes}<< with {hand} hand")
+                            # print(frame_rgb.shape)
+                            img = QImage(frame_rgb.data, w, h, ch * w, QImage.Format_RGB888)
+                            scaled_img = img.scaled(600, 480, Qt.KeepAspectRatio)
+                            self.updateFrame.emit(scaled_img)
+                            if cv2.waitKey(1) & 0xFF == ord('q'):
+                                break                    
+                        except:
+                            print('ERROR')
+                            break
+                    else:
+                        print('Empty WebCam')
+                        break
+                
+                if len(os.listdir(os.path.join(DATA_DIR, str(classes)))) > 0:
+                    to_add = len(os.listdir(os.path.join(DATA_DIR, str(classes))))
+                else:
+                    to_add = 0
+
+                if i == 0:
+                    counter = 0
+                    compare = dataset_size//2
+                    print(compare)
+                    print(counter)
+                else:
+                    counter = dataset_size//2
+                    compare = dataset_size
+                    print(compare)
+                    print(counter)
+                while counter < compare:
+                    res, frame = cap.read()
+                    if res:
+                        try:
+                            print(f'Dataset to number: {classes}')
+                            self.updateFrame.emit(scaled_img)
+
+                            cv2.imwrite(os.path.join(DATA_DIR, str(classes), f'{counter+to_add}.jpg'), frame)
+
+                            counter += 1
+
+                            if cv2.waitKey(1) & 0xFF == ord('q'):
+                                break
+                        except:
+                            print('ERROR')
+                            break
+
+                    else:
+                        break
 
     def run(self):
         self.cap = cv2.VideoCapture(0)
@@ -257,9 +335,12 @@ class MainWindow(QMainWindow):
 
         # Add button to start and finish
         button_layout = QVBoxLayout()
+        self.bt_collect_imgs = QPushButton('Take pictures')
         self.bt_start = QPushButton('Start')
         self.bt_stop = QPushButton('Stop')
         # Add resposividade to buttons
+        self.bt_collect_imgs.setSizePolicy(
+            QSizePolicy.Preferred, QSizePolicy.Expanding)
         self.bt_start.setSizePolicy(
             QSizePolicy.Preferred, QSizePolicy.Expanding)
         self.bt_stop.setSizePolicy(
@@ -271,6 +352,7 @@ class MainWindow(QMainWindow):
         # QSizePolicy.Preferred: O widget tem um tamanho preferencial, mas pode ser expandido ou reduzido de acordo com as restrições do layout.
 
         # Add buttons to buttons layout
+        button_layout.addWidget(self.bt_collect_imgs)
         button_layout.addWidget(self.bt_start)
         button_layout.addWidget(self.bt_stop)
 
@@ -342,6 +424,7 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(widget)
 
+        self.bt_collect_imgs.clicked.connect(self.collect_data)
         self.bt_start.clicked.connect(self.start)
         self.bt_stop.clicked.connect(self.kill_thread)
 
@@ -357,6 +440,11 @@ class MainWindow(QMainWindow):
     def start(self):
         print("Starting...")
         self.th.start()
+    
+    @Slot()
+    def collect_data(self):
+        print('Collecting...')
+        self.th.collect_imgs()
 
     @Slot()
     def kill_thread(self):
