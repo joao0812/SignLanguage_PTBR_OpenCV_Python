@@ -1,6 +1,10 @@
 import os
 import cv2
 
+import cvzone.HandTrackingModule as htm
+
+detector = htm.HandDetector(detectionCon=0.8, maxHands=2)
+
 def writeText(img, text, color=(255,0,0)):
     fonte = cv2.FONT_HERSHEY_SIMPLEX
     text = text.upper()
@@ -28,18 +32,37 @@ def main():
             os.makedirs(os.path.join(DATA_DIR, str(classes)))
 
         for i in range(2):
+            w, h = 80, 80
+            x, y = 10, 40
+            img_answer_0 = cv2.imread('./template/0.PNG')
+            img_answer_0 = cv2.resize(img_answer_0, (w, h))
             while True:
                 res, frame = cap.read()
+                hands, frame = detector.findHands(frame)
                 hand = 'Right' if i == 0 else 'Left'
                 if res:
-                    try:
-                        writeText(frame, f"Get ready to register number >>{classes}<< with {hand} hand")
-                        cv2.imshow('WebCam', frame)
-                        if cv2.waitKey(1) & 0xFF == ord('q'):
-                            break                    
-                    except:
-                        print('ERROR')
-                        break
+                    if len(hands) == 1:
+                        if hand == hands[0]['type']:
+                            try:
+                                writeText(frame, f"Get ready to register number >>{classes}<< with {hand} hand")
+                                frame[y:y+h, x:x+w] = img_answer_0
+                                                 
+                            except:
+                                print('ERROR')
+                                break
+                        else:
+                            writeText(frame, f"ERROR! Wrong hand -> Expected {hand} hand got {hands[0]['type']} hand", (0,0,255))
+                            print('wrong hand')
+                    elif len(hands) == 2:
+                        writeText(frame, f"Just one hand per capture", (0,255,255))
+                        print('2 hands on the screen')
+                    else:
+                        writeText(frame, f"Hands no indetified", (0,0,255))
+                        print('No hand on the screen')
+                    
+                    cv2.imshow('WebCam', frame)
+                    if cv2.waitKey(1) & 0xFF == ord('q'):
+                        break   
                 else:
                     print('Empty WebCam')
                     break
@@ -64,6 +87,7 @@ def main():
                 if res:
                     try:
                         print(f'Dataset to number: {classes}')
+                        writeText(frame, f"Registring the >>{classes}<< with {hand} hand")
                         cv2.imshow('WebCam', frame)
 
                         cv2.imwrite(os.path.join(DATA_DIR, str(classes), f'{counter+to_add}.jpg'), frame)

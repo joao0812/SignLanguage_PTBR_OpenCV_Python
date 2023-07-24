@@ -35,9 +35,9 @@ def cropImage(img, cord1, cord2, class_pred, class_porcent):
     #print(max_x)
     #print(max_y)
     
+    cv2.rectangle(img_copy, (min_x, min_y), (max_x, max_y), (255,0,0), 5)
+    cv2.putText(img_copy, f'{class_pred[0]} -- {(class_porcent*100):.2f}%', (min_x,min_y-10), cv2.FONT_HERSHEY_SIMPLEX, .7, (255,0,0), 1, cv2.LINE_AA)
     cropped_img = img_copy[min_y:max_y, min_x:max_x]
-    #cv2.rectangle(img_copy, (min_x, min_y), (max_x, max_y), (255,0,0), 5)
-    #cv2.putText(img_copy, f'{class_pred[0]} -- {(class_porcent*100):.2f}%', (min_x,min_y-10), cv2.FONT_HERSHEY_SIMPLEX, .7, (255,0,0), 1, cv2.LINE_AA)
     return cropped_img
 
 

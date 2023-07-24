@@ -204,11 +204,23 @@ class Thread(QThread):
                 min_points = []
                 max_points = []
 
+                min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(np.array(cord_pixel))
+
                 min_points.append(min_point_x[0])
                 min_points.append(min_point_y[1])
 
                 max_points.append(max_point_x[0])
                 max_points.append(max_point_y[1])
+
+                print(f'V1 => min point X {min_point_x[0]}')
+                print(f'V1 => min point Y {min_point_y[1]}')
+                print(f'V1 => max point X {max_point_x[0]}')
+                print(f'V1 => max point Y {max_point_y[1]}')
+                print('=-'*30)
+                print(f'V2 => min_val {min_val}')
+                print(f'V2 => max_val {max_val}')
+                print(f'V2 => min_loc {min_loc}')
+                print(f'V2 => max_loc {max_loc}')
 
                 prediction = model.predict(np.asarray([data_aux]))
                 proba_porcent = model.predict_proba(np.asarray([data_aux]))
