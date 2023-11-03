@@ -21,8 +21,8 @@ def main():
         os.makedirs(DATA_DIR)
 
     # Register the number of classes and the size to dataset
-    number_of_classes = 10
-    dataset_size = 1
+    number_of_classes = 37
+    dataset_size = 400
     i = 0
 
     # Get WebCam
@@ -44,7 +44,7 @@ def main():
                     if len(hands) == 1:
                         if hand == hands[0]['type']:
                             try:
-                                writeText(frame, f"Get ready to register number >>{classes}<< with {hand} hand")
+                            #    writeText(frame, f"Get ready to register number >>{classes}<< with {hand} hand")
                                 frame[y:y+h, x:x+w] = img_answer_0
                                                  
                             except:

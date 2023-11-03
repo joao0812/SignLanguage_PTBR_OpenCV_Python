@@ -33,7 +33,7 @@ class Thread(QThread):
         self.trained_file = None
         self.status = True
         self.cap = True
-        self.min_porcent = 0.999
+        self.min_porcent = 0.5
         self.prediction_class = ''
         self.prediction_porcent = ''
 
@@ -148,7 +148,8 @@ class Thread(QThread):
     def run(self):
         self.cap = cv2.VideoCapture(0)
         labels_dict = {'0': '0', '1': '1', '2': '2', '3': '3',
-                       '4': '4', '5': '5', '6': '6', '7': '7', '8': '8', '9': '9'}
+                       '4': '4', '5': '5', '6': '6', '7': '7',
+                       '8': '8', '9': '9'}
         model_dict = pickle.load(open('./models/MPLClassifier.p', 'rb'))
         model = model_dict['model_mlp']
 
@@ -240,7 +241,7 @@ class Thread(QThread):
                 # print(predicted_character)
                 if prediction_porcent.max() >= self.min_porcent:
                     self.writeText(
-                        frame_rgb, f'Number: {prediction[0]} - {(prediction_porcent*100):.2f}%')
+                        frame_rgb, f'Char: {prediction[0]} - {(prediction_porcent*100):.2f}%')
                 else:
                     self.writeText(frame_rgb, 'Low porcent')
             else:
