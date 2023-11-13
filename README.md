@@ -1,5 +1,5 @@
 # SignLanguage_PTBR_OpenCV_Python
-SignLanguage PT BR using OpenCV and Python
+SignLanguage PT BR using OpenCV and Python (Beta 1.0)
 
 
 
@@ -18,6 +18,13 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install depende
 Install the dependencies using the command below:
 ```bash
 pip install -r /requirements.txt
+```
+
+## Usage
+To start:
+```
+run the command prompt on the folder
+use the command: python gui/mainWindow.py
 ```
 
 
