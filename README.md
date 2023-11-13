@@ -6,7 +6,10 @@ SignLanguage PT BR using OpenCV and Python
 **Authors:**
 
  - [João Pedro Almeida](https://github.com/joao0812)
- - [Eric Menezes](https://github.com/mi1048)
+ - [Eric Menezes](https://github.com/mi1048)!
+ 
+ [demo](https://github.com/mi1048/SignLanguage_PTBR_OpenCV_Python/assets/48776197/424b2bef-150e-4900-9117-73ff231a7d77)
+
 
  ## Installation
 First of all, install [Python 3](https://www.python.org/downloads/).
