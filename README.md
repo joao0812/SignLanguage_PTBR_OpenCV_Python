@@ -26,7 +26,7 @@ To start:
 run the command prompt on the folder
 use the command: python gui/mainWindow.py
 ```
-After that on the gui(Graphical User Interface):
+After that on the gui (Graphical User Interface):
 ```
 You need to select what machine learning model do you want to use it,
 consequently is recommended to choose how much porcent of the dataset you want to train it and if you want to shuffle it.
